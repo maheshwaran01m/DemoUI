@@ -1,4 +1,4 @@
-# Demo
+# DemoUI
 
 A collection of SwiftUI notes, playground ideas on learning and experimenting with SwiftUI
 
