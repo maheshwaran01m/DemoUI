@@ -10,7 +10,7 @@ import SwiftUI
 enum ViewCoordinator: String, CaseIterable, View {
   case list, listBackground, mask, tab, sheet, transition, geometryChange, scrollPosition, scrollTransition, meshGradient,
        visualEffect, buttonStyle, imageSymbolEffect, matchedGeometryEffect, listMove, layoutView, phaseAnimator, signature,
-       keyframeAnimator, coordinateSpace, timeLine
+       keyframeAnimator, coordinateSpace, timeLine, swiftMacro
   
   var title: String {
     switch self {
@@ -35,6 +35,7 @@ enum ViewCoordinator: String, CaseIterable, View {
       case .keyframeAnimator: return "KeyframeAnimator"
       case .coordinateSpace: return "Coordinate Space"
       case .timeLine: return "Time Line"
+    case .swiftMacro: return "Swift Macro"
     }
   }
   
