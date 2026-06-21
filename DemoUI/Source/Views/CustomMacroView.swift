@@ -251,81 +251,6 @@ extension CustomMacroView {
     }
   }
 
-  // MARK: - Reorder
-
-  struct ReorderContentView: View {
-    
-    @State var records = Item.automatic
-    
-    var body: some View {
-      List {
-        ForEach(records) { record in
-          Text(record.title)
-            .contentShape(.rect)
-        }
-        .reorderable() // iOS 27+
-      }
-      .reorderContainer(for: Item.self) { difference in
-        difference.apply(to: &records)
-      }
-    }
-    
-    struct Item: Identifiable, Hashable {
-      let id: String
-      let title: String
-      
-      init(title: String) {
-        self.id = title + "_ID"
-        self.title = title
-      }
-      
-      static let automatic: [Self] = (1..<21).map { Item(title: "\($0)") }
-    }
-  }
-
-  /*
-   import OrderedCollections // from https://github.com/apple/swift-collections
-
-   extension ReorderDifference where CollectionID == ReorderableSingleCollectionIdentifier {
-       
-   func apply(to values: inout [some Identifiable<ItemID>]) {
-           var dictionary = OrderedDictionary(uniqueKeys: values.map { $0.id }, values: values)
-           let destinationOffset: Int? = switch destination.position {
-           case .before(let destination):
-               dictionary.keys.firstIndex(of: destination)
-           case .end:
-               nil
-           }
-           dictionary.move(keys: sources, to: destinationOffset ?? values.endIndex)
-           values = dictionary.values.elements
-       }
-   }
-   
-   */
-
-  extension ReorderDifference where CollectionID == ReorderableSingleCollectionIdentifier {
-    
-    func apply<T: Identifiable<ItemID>>(to values: inout [T]) {
-      var copy = values
-      let sourceIDs = Set(sources)
-      
-      let movedItems = copy.filter { sourceIDs.contains($0.id) }
-      copy.removeAll { sourceIDs.contains($0.id) }
-      
-      let insertionIndex: Int = switch destination.position {
-      case .before(let destinationID):
-        copy.firstIndex { $0.id == destinationID } ?? copy.endIndex
-        
-      case .end:
-        copy.endIndex
-      }
-      
-      copy.insert(contentsOf: movedItems, at: insertionIndex)
-      values = copy
-    }
-  }
-
-
   // MARK: - New Available SwiftUI API
 
   struct OtherSwiftUIAPI: View {
@@ -380,4 +305,77 @@ extension CustomMacroView {
     // Product -> Delete Derived Data
   }
 
+  // MARK: - Reorder
+
+  struct ReorderContentView: View {
+    
+    @State var records = Item.automatic
+    
+    var body: some View {
+      List {
+        ForEach(records) { record in
+          Text(record.title)
+            .contentShape(.rect)
+        }
+        .reorderable() // iOS 27+
+      }
+      .reorderContainer(for: Item.self) { difference in
+        difference.apply(to: &records)
+      }
+    }
+    
+    struct Item: Identifiable, Hashable {
+      let id: String
+      let title: String
+      
+      init(title: String) {
+        self.id = title + "_ID"
+        self.title = title
+      }
+      
+      static let automatic: [Self] = (1..<21).map { Item(title: "\($0)") }
+    }
+  }
+
+  /*
+   import OrderedCollections // from https://github.com/apple/swift-collections
+
+   extension ReorderDifference where CollectionID == ReorderableSingleCollectionIdentifier {
+       
+   func apply(to values: inout [some Identifiable<ItemID>]) {
+           var dictionary = OrderedDictionary(uniqueKeys: values.map { $0.id }, values: values)
+           let destinationOffset: Int? = switch destination.position {
+           case .before(let destination):
+               dictionary.keys.firstIndex(of: destination)
+           case .end:
+               nil
+           }
+           dictionary.move(keys: sources, to: destinationOffset ?? values.endIndex)
+           values = dictionary.values.elements
+       }
+   }
+   
+   */
+}
+
+fileprivate extension ReorderDifference where CollectionID == ReorderableSingleCollectionIdentifier {
+  
+  func apply<T: Identifiable<ItemID>>(to values: inout [T]) {
+    var copy = values
+    let sourceIDs = Set(sources)
+    
+    let movedItems = copy.filter { sourceIDs.contains($0.id) }
+    copy.removeAll { sourceIDs.contains($0.id) }
+    
+    let insertionIndex: Int = switch destination.position {
+    case .before(let destinationID):
+      copy.firstIndex { $0.id == destinationID } ?? copy.endIndex
+      
+    case .end:
+      copy.endIndex
+    }
+    
+    copy.insert(contentsOf: movedItems, at: insertionIndex)
+    values = copy
+  }
 }

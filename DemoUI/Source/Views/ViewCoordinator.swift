@@ -67,6 +67,7 @@ enum ViewCoordinator: String, CaseIterable, View {
       case .keyframeAnimator: CustomKeyframeAnimatorView()
       case .coordinateSpace: CustomCoordinateSpaceView()
       case .timeLine: CustomTimeLineView()
+      case .swiftMacro: CustomMacroView()
     }
   }
 }
